@@ -1,8 +1,8 @@
 <?php 
     include './connection.php';
 
-    $username = $_POST['username'];
-    $password = $_POST['password'];
+    $username = $_GET['username'];
+    $password = $_GET['password'];
 
     if ($stmt = $mysqli->prepare("SELECT username, password FROM users where username=?")) {
         $stmt->bind_param("s", $username);
