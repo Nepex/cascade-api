@@ -4,7 +4,7 @@
     $username = $_POST['username'];
     $password = $_POST['password'];
 
-    if ($stmt = $mysqli->prepare("SELECT username, password FROM users where name=?")) {
+    if ($stmt = $mysqli->prepare("SELECT username, password FROM users where username=?")) {
         $stmt->bind_param("s", $username);
         $stmt->execute();
         $stmt->bind_result($fetchedUser, $fetchedPass);
