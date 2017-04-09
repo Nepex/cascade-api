@@ -28,8 +28,7 @@
             $stmt->execute();
             
             // create inventory
-            $inventoryCreate = "INSERT INTO `inventory` (username) VALUES (?)";
-            if ($stmt = $mysqli->prepare($inventoryCreate)) {
+            if ($stmt = $mysqli->prepare("INSERT INTO `inventory` (username) VALUES (?)")) {
                 $stmt->bind_param('s', $username);
                 $stmt->execute();
                 $stmt->close();
