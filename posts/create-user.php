@@ -17,6 +17,9 @@
         echo 'username taken';
     } else if ($emailMatches != 0) {
         echo 'email taken';
+    } else if (!ctype_alnum($username) || $username == '' || strlen($username) > 15 
+    || !filter_var($email, FILTER_VALIDATE_EMAIL) || $email == '' || strlen($email) > 60 || $password == '' || strlen($password) > 20) {
+        echo 'validation error';
     } else {
         // create user
         if ($stmt = $mysqli->prepare("INSERT INTO `users` (username, password, email) VALUES (?, ?, ?)")) {
