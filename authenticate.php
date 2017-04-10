@@ -19,7 +19,11 @@
     $hashed = $fetchedPass;
     $unhashed = password_verify($password, $hashed);
 
-    if ($unhashed == 0) {
+
+    if ($username == '' || $password == '' || strlen($username) > 15 || strlen($password) > 20 || !ctype_alnum($username)) {
+        echo 'validation error';
+    }
+    else if ($unhashed == 0) {
         echo 'incorrect credentials';
     } else {
         if ($stmt = $mysqli->prepare("SELECT id FROM users WHERE username=?")) {
