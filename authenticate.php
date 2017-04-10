@@ -1,10 +1,14 @@
 <?php 
     include './connection.php';
+    include './jwt-helper.php';
+
+    header('Access-Control-Allow-Origin: http://localhost:4200');
+    header('Access-Control-Allow-Headers: Content-Type');
 
     $username = $_GET['username'];
     $password = $_GET['password'];
 
-    if ($stmt = $mysqli->prepare("SELECT username, password FROM users where username=?")) {
+    if ($stmt = $mysqli->prepare("SELECT username, password FROM users WHERE username=?")) {
         $stmt->bind_param("s", $username);
         $stmt->execute();
         $stmt->bind_result($fetchedUser, $fetchedPass);
@@ -26,7 +30,10 @@
             $stmt->close();
         }
 
-        echo $fetchedId;
-        $mysqli->close();
+        $token = array();
+        $token['id'] = $fetchedId;
+        echo JWT::encode($token, 'secret_server_key');
     }
+
+    $mysqli->close();
 ?>
