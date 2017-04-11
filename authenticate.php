@@ -36,6 +36,7 @@
 
         $token = array();
         $token['id'] = $fetchedId;
+        
         echo JWT::encode($token, 'secret_server_key');
     }
 
