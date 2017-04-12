@@ -7,10 +7,9 @@
 
     $headers = apache_request_headers();
     $sentToken = $headers['Authorization'];
-    $username = '';
     
     if ($sentToken) {
-        $decoded = JWT::decode($sentToken, 'secret_server_key');
+        $decoded = JWT::decode($sentToken, '8725309');
     }
 
     $userId = $decoded->id;
@@ -18,7 +17,7 @@
     $sql = "SELECT * FROM users WHERE id = $userId";
     $result = $mysqli->query($sql);
 
-    if ($result->num_rows > 0) {
+    if ($result->num_rows) {
         while($row = $result->fetch_assoc()) {
             $row["password"] = '';
             $rows[] = $row;

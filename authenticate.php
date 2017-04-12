@@ -37,7 +37,7 @@
         $token = array();
         $token['id'] = $fetchedId;
         
-        echo JWT::encode($token, 'secret_server_key');
+        echo JWT::encode($token, '8725309');
     }
 
     $mysqli->close();
