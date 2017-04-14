@@ -20,41 +20,41 @@
     
     if ($sentToken) {
         $decoded = JWT::decode($sentToken, '8725309');
-    }
 
-    $userId = $decoded->id;
+        $userId = $decoded->id;
 
-    if (!ctype_alnum($name) || $name == '' || strlen($name) > 15 || $job == '' || strlen($job) > 15 ||
-    $sprite == '' || strlen($sprite) > 15) {
-        echo 'validation error';
-    } else {
-        $sql = "SELECT * FROM users WHERE id = $userId";
-        $result = $mysqli->query($sql);
+        if (!ctype_alnum($name) || $name == '' || strlen($name) > 15 || $job == '' || strlen($job) > 15 ||
+        $sprite == '' || strlen($sprite) > 15) {
+            echo 'validation error';
+        } else {
+            $sql = "SELECT * FROM users WHERE id = $userId";
+            $result = $mysqli->query($sql);
 
-        if ($result->num_rows) {
-            while($row = $result->fetch_assoc()) {
-                $username = $row['username'];
-                $partySlotsAvailable = $row['party_slots'] - 1;
+            if ($result->num_rows) {
+                while($row = $result->fetch_assoc()) {
+                    $username = $row['username'];
+                    $partySlotsAvailable = $row['party_slots'] - 1;
+                }
             }
-        }
 
-        // remove available party slot
-        if ($stmt = $mysqli->prepare("UPDATE `users` SET party_slots = ? WHERE id = $userId")) {
-            $stmt->bind_param('i', $partySlotsAvailable);
-            $stmt->execute();
-            
-            // create party member
-            if ($stmt = $mysqli->prepare("INSERT INTO `party` (owner, name, job, sprite, level, experience, current_hp, hp, current_mp, mp) 
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")) {
-                $stmt->bind_param('ssssiiiiii', $username, $name, $job, $sprite, $level, $experience, $currentHp, $hp, $currentMp, $mp);
+            // remove available party slot
+            if ($stmt = $mysqli->prepare("UPDATE `users` SET party_slots = ? WHERE id = $userId")) {
+                $stmt->bind_param('i', $partySlotsAvailable);
                 $stmt->execute();
+                
+                // create party member
+                if ($stmt = $mysqli->prepare("INSERT INTO `party` (owner, name, job, sprite, level, experience, current_hp, hp, current_mp, mp) 
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")) {
+                    $stmt->bind_param('ssssiiiiii', $username, $name, $job, $sprite, $level, $experience, $currentHp, $hp, $currentMp, $mp);
+                    $stmt->execute();
+                    $stmt->close();
+                }
+
+                echo 'success';
+
                 $stmt->close();
-            }
-
-            echo 'success';
-
-            $stmt->close();
-        } 
+            } 
+        }
     }
 
     $mysqli->close();

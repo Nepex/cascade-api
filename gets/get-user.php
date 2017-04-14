@@ -10,19 +10,21 @@
     
     if ($sentToken) {
         $decoded = JWT::decode($sentToken, '8725309');
-    }
+    
+        $userId = $decoded->id;
 
-    $userId = $decoded->id;
+        $sql = "SELECT * FROM users WHERE id = $userId";
+        $result = $mysqli->query($sql);
 
-    $sql = "SELECT * FROM users WHERE id = $userId";
-    $result = $mysqli->query($sql);
-
-    if ($result->num_rows) {
-        while($row = $result->fetch_assoc()) {
-            $row["password"] = '';
-            $rows[] = $row;
+        if ($result->num_rows) {
+            while($row = $result->fetch_assoc()) {
+                $row["password"] = '';
+                $rows[] = $row;
+            }
         }
+
+        echo json_encode($rows);
     }
 
-    echo json_encode($rows);
+    $mysqli->close();
 ?>
