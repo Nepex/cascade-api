@@ -34,6 +34,7 @@
                 while($row = $result->fetch_assoc()) {
                     $username = $row['username'];
                     $partySlotsAvailable = $row['party_slots'] - 1;
+                    $partySlotsUnlocked = $row['party_slots_unlocked'];
                 }
             }
 
@@ -43,9 +44,9 @@
                 $stmt->execute();
                 
                 // create party member
-                if ($stmt = $mysqli->prepare("INSERT INTO `party` (owner, name, job, sprite, level, experience, current_hp, hp, current_mp, mp) 
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")) {
-                    $stmt->bind_param('ssssiiiiii', $username, $name, $job, $sprite, $level, $experience, $currentHp, $hp, $currentMp, $mp);
+                if ($stmt = $mysqli->prepare("INSERT INTO `party` (owner, name, job, sprite, level, experience, current_hp, hp, current_mp, mp, party_position) 
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")) {
+                    $stmt->bind_param('ssssiiiiiii', $username, $name, $job, $sprite, $level, $experience, $currentHp, $hp, $currentMp, $mp, $partySlotsUnlocked);
                     $stmt->execute();
                     $stmt->close();
                 }
