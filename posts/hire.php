@@ -8,8 +8,9 @@
     $name = $_GET['name'];
     $job = $_GET['job'];
     $sprite = $_GET['sprite'];
-    $level = 1;
+    $jobLevels = 1;
     $experience = 0;
+    $experienceNeeded = 500;
     $currentHp = 100;
     $hp = 100;
     $currentMp = 50;
@@ -34,7 +35,6 @@
                 while($row = $result->fetch_assoc()) {
                     $username = $row['username'];
                     $partySlotsAvailable = $row['party_slots'] - 1;
-                    $partySlotsUnlocked = $row['party_slots_unlocked'];
                 }
             }
 
@@ -44,9 +44,10 @@
                 $stmt->execute();
                 
                 // create party member
-                if ($stmt = $mysqli->prepare("INSERT INTO `party` (owner, name, job, sprite, level, experience, current_hp, hp, current_mp, mp, party_position) 
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")) {
-                    $stmt->bind_param('ssssiiiiiii', $username, $name, $job, $sprite, $level, $experience, $currentHp, $hp, $currentMp, $mp, $partySlotsUnlocked);
+                if ($stmt = $mysqli->prepare("INSERT INTO `party` (owner, name, job, sprite, knight_lvl, mage_lvl, priest_lvl,
+                experience, experience_needed, current_hp, hp, current_mp, mp) 
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")) {
+                    $stmt->bind_param('sssssiiiiiiii', $username, $name, $job, $sprite, $jobLevels, $jobLevels, $jobLevels, $experience, $experienceNeeded, $currentHp, $hp, $currentMp, $mp);
                     $stmt->execute();
                     $stmt->close();
                 }
