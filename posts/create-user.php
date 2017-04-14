@@ -2,7 +2,7 @@
     include '../connection.php';
 
     header('Access-Control-Allow-Origin: http://localhost:4200');
-    header('Access-Control-Allow-Headers: Content-Type, Content-Range, Content-Disposition, Content-Description');
+    header('Access-Control-Allow-Headers: Content-Type');
 
     $username = $_GET['username'];
     $email = $_GET['email'];
