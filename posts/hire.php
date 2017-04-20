@@ -12,6 +12,11 @@
     $experience = 0;
     $experienceNeeded = 500;
     $statPoints = 0;
+    $cure = 0;
+    $fireball = 0;
+    $helm = 'Leather Cap';
+    $chest = 'Leather Vest';
+    $mainHand = '';
 
     // stats depending on job
     if ($job == 'Knight') {
@@ -23,6 +28,7 @@
         $magic = 5;
         $defense = 15;
         $haste = 10;
+        $mainHand =  'Practice Sword';
     } else if ($job == 'Mage') {
         $currentHp = 99;
         $hp = 99;
@@ -32,6 +38,8 @@
         $magic = 25;
         $defense = 10;
         $haste = 10;
+        $fireball = 1;
+        $mainHand = 'Practice Wand';
     } else if ($job == 'Priest') {
         $currentHp = 115;
         $hp = 115;
@@ -41,6 +49,8 @@
         $magic = 20;
         $defense = 15;
         $haste = 10;
+        $cure = 1;
+        $mainHand = 'Practice Wand';        
     }
 
     $headers = apache_request_headers();
@@ -66,10 +76,11 @@
 
             // create party member
             if ($stmt = $mysqli->prepare("INSERT INTO `party` (owner, name, job, sprite, level,
-            experience, experience_needed, strength, magic, defense, haste, current_hp, hp, current_mp, mp, stat_points) 
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")) {
-                $stmt->bind_param('sssssiiiiiiiiiii', $username, $name, $job, $sprite, $level, $experience, $experienceNeeded, 
-                $strength, $magic, $defense, $haste, $currentHp, $hp, $currentMp, $mp, $statPoints);
+            experience, experience_needed, strength, magic, defense, haste, current_hp, hp, current_mp, mp, stat_points, helm, 
+            chest, main_hand, cure, fireball) 
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")) {
+                $stmt->bind_param('sssssiiiiiiiiiiisssii', $username, $name, $job, $sprite, $level, $experience, $experienceNeeded, 
+                $strength, $magic, $defense, $haste, $currentHp, $hp, $currentMp, $mp, $statPoints, $helm, $chest, $mainHand, $cure, $fireball);
                 $stmt->execute();
                 $stmt->close();
             }
