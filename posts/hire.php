@@ -12,8 +12,6 @@
     $experience = 0;
     $experienceNeeded = 500;
     $statPoints = 0;
-    $cure = 0;
-    $fireball = 0;
     $helm = 'Leather Cap';
     $chest = 'Leather Vest';
     $mainHand = '';
@@ -38,7 +36,6 @@
         $magic = 25;
         $defense = 10;
         $haste = 10;
-        $fireball = 1;
         $mainHand = 'Practice Wand';
     } else if ($job == 'Priest') {
         $currentHp = 115;
@@ -49,7 +46,6 @@
         $magic = 20;
         $defense = 15;
         $haste = 10;
-        $cure = 1;
         $mainHand = 'Practice Wand';        
     }
 
@@ -77,12 +73,37 @@
             // create party member
             if ($stmt = $mysqli->prepare("INSERT INTO `party` (owner, name, job, sprite, level,
             experience, experience_needed, strength, magic, defense, haste, current_hp, hp, current_mp, mp, stat_points, helm, 
-            chest, main_hand, cure, fireball) 
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")) {
-                $stmt->bind_param('sssssiiiiiiiiiiisssii', $username, $name, $job, $sprite, $level, $experience, $experienceNeeded, 
-                $strength, $magic, $defense, $haste, $currentHp, $hp, $currentMp, $mp, $statPoints, $helm, $chest, $mainHand, $cure, $fireball);
+            chest, main_hand) 
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")) {
+                $stmt->bind_param('sssssiiiiiiiiiiisss', $username, $name, $job, $sprite, $level, $experience, $experienceNeeded, 
+                $strength, $magic, $defense, $haste, $currentHp, $hp, $currentMp, $mp, $statPoints, $helm, $chest, $mainHand);
                 $stmt->execute();
                 $stmt->close();
+            }
+
+            // insert spells
+            if($job === 'Mage') {
+                $spell = 'Fireball';
+                $cost = 5;
+                $description = 'Deals a small amount of magic damage to an enemy.';
+                if ($stmt = $mysqli->prepare("INSERT INTO `spells_learned` (username, party_member, spell_name, cost, description) 
+                VALUES (?, ?, ?, ?, ?)")) {
+                    $stmt->bind_param('sssis', $username, $name, $spell, $cost, $description);
+                    $stmt->execute();
+                    $stmt->close();
+                }
+            }
+
+            if($job === 'Priest') {
+                if ($stmt = $mysqli->prepare("INSERT INTO `spells_learned` (username, party_member, spell_name, cost, description) 
+                VALUES (?, ?, ?, ?, ?)")) {
+                    $spell = 'Cure';
+                    $cost = 5;
+                    $description = 'Heals a party member for a small amount.';
+                    $stmt->bind_param('sssis', $username, $name, $spell, $cost, $description);
+                    $stmt->execute();
+                    $stmt->close();
+                }
             }
             
             echo 'success';
