@@ -57,19 +57,24 @@
 
         $userId = $decoded->id;
 
+        $sql = "SELECT * FROM users WHERE id = $userId";
+        $result = $mysqli->query($sql);
+        if ($result->num_rows) {
+            while($row = $result->fetch_assoc()) {
+                $username = $row['username'];
+            }
+        }
+
+        $searchTakenNames = mysqli_query($mysqli, "SELECT * FROM party WHERE owner='$username' AND name='$name'");
+        $nameMatches = mysqli_num_rows($searchTakenNames);
+
         if (!ctype_alnum($name) || $name == '' || strlen($name) > 15 || $job == '' || strlen($job) > 15 ||
         $sprite == '' || strlen($sprite) > 15) {
             echo 'validation error';
+        }
+        else if ($nameMatches != 0) {
+            echo 'name taken';
         } else {
-            $sql = "SELECT * FROM users WHERE id = $userId";
-            $result = $mysqli->query($sql);
-
-            if ($result->num_rows) {
-                while($row = $result->fetch_assoc()) {
-                    $username = $row['username'];
-                }
-            }
-
             // create party member
             if ($stmt = $mysqli->prepare("INSERT INTO `party` (owner, name, job, sprite, level,
             experience, experience_needed, strength, magic, defense, haste, current_hp, hp, current_mp, mp, stat_points, helm, 
