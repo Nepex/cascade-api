@@ -29,6 +29,14 @@ if ($sentToken) {
     
     $userId = $decoded->id;
     
+    $userSql = "SELECT * FROM users WHERE id = $userId";
+    $userResult = $mysqli->query($userSql);
+    if ($userResult->num_rows) {
+        while($row = $userResult->fetch_assoc()) {
+            $username = $row["username"];
+        }
+    }
+
     $partySql = "SELECT * FROM party WHERE id = $partyId";
     $partyResult = $mysqli->query($partySql);
     if ($partyResult->num_rows) {
@@ -57,53 +65,49 @@ if ($sentToken) {
     
     $newSlot = 'empty';
     
-    if($slot == 'mainHand') {
-        if ($stmt = $mysqli->prepare("UPDATE party SET main_hand = ?, strength = ?, magic = ?, defense = ?, resistance = ?, haste = ?,
-        hp = ?, mp = ?, current_hp = ?, current_mp = ?  WHERE id = ?")) {
-            $stmt->bind_param('siiiiiiiiii', $newSlot, $newStr, $newMag, $newDef, $newRes, $newHst, $newHp, $newMp, $currentHp, $currentMp, $partyId);
-            $stmt->execute();
-            $stmt->close();
-        }
+    // unequip the item and remove the item's bonuses
+    switch($slot) {
+        case 'mainHand':
+        $unequipSlot = 'main_hand';
+        break;
+        case 'offHand':
+        $unequipSlot = 'off_hand';
+        break;
+        case 'helm':
+        $unequipSlot = 'helm';
+        break;
+        case 'chest':
+        $unequipSlot = 'chest';
+        break;
+        case 'accessory':
+        $unequipSlot = 'accessory';
+        break;
     }
     
-    if($slot == 'offHand') {
-        if ($stmt = $mysqli->prepare("UPDATE party SET off_hand = ?, strength = ?, magic = ?, defense = ?, resistance = ?, haste = ?,
-        hp = ?, mp = ?, current_hp = ?, current_mp = ?  WHERE id = ?")) {
-            $stmt->bind_param('siiiiiiiiii', $newSlot, $newStr, $newMag, $newDef, $newRes, $newHst, $newHp, $newMp, $currentHp, $currentMp, $partyId);
-            $stmt->execute();
-            $stmt->close();
-        }
+    if ($stmt = $mysqli->prepare("UPDATE party SET ".$unequipSlot." = ?, strength = ?, magic = ?, defense = ?, resistance = ?, haste = ?,
+    hp = ?, mp = ?, current_hp = ?, current_mp = ?  WHERE id = ?")) {
+        $stmt->bind_param('siiiiiiiiii', $newSlot, $newStr, $newMag, $newDef, $newRes, $newHst, $newHp, $newMp, $currentHp, $currentMp, $partyId);
+        $stmt->execute();
+        $stmt->close();
     }
-    
-    if($slot == 'helm') {
-        if ($stmt = $mysqli->prepare("UPDATE party SET helm = ?, strength = ?, magic = ?, defense = ?, resistance = ?, haste = ?,
-        hp = ?, mp = ?, current_hp = ?, current_mp = ?  WHERE id = ?")) {
-            $stmt->bind_param('siiiiiiiiii', $newSlot, $newStr, $newMag, $newDef, $newRes, $newHst, $newHp, $newMp, $currentHp, $currentMp, $partyId);
-            $stmt->execute();
-            $stmt->close();
-        }
-    }
-    
-    if($slot == 'chest') {
-        if ($stmt = $mysqli->prepare("UPDATE party SET chest = ?, strength = ?, magic = ?, defense = ?, resistance = ?, haste = ?,
-        hp = ?, mp = ?, current_hp = ?, current_mp = ?  WHERE id = ?")) {
-            $stmt->bind_param('siiiiiiiiii', $newSlot, $newStr, $newMag, $newDef, $newRes, $newHst, $newHp, $newMp, $currentHp, $currentMp, $partyId);
-            $stmt->execute();
-            $stmt->close();
-        }
-    }
-    
-    if($slot == 'accessory') {
-        if ($stmt = $mysqli->prepare("UPDATE party SET accessory = ?, strength = ?, magic = ?, defense = ?, resistance = ?, haste = ?,
-        hp = ?, mp = ?, current_hp = ?, current_mp = ?  WHERE id = ?")) {
-            $stmt->bind_param('siiiiiiiiii', $newSlot, $newStr, $newMag, $newDef, $newRes, $newHst, $newHp, $newMp, $currentHp, $currentMp, $partyId);
-            $stmt->execute();
-            $stmt->close();
+
+    // add the item back into inventory
+    $inventorySql = "SELECT * FROM inventory WHERE username = '$username'";
+    $inventoryResult = $mysqli->query($inventorySql);
+    if ($inventoryResult->num_rows) {
+        while($row = $inventoryResult->fetch_assoc()) {
+            $originalAmount = $row[$id];
+
+            $newAmount = $originalAmount + 1;
         }
     }
 
-    // add to inventory
-    
+    if ($stmt = $mysqli->prepare("UPDATE inventory SET ".$id." = ? WHERE username = ?")) {
+        $stmt->bind_param('ss', $newAmount, $username);
+        $stmt->execute();
+        $stmt->close();
+    }
+     
     echo 'success';
 }
 
