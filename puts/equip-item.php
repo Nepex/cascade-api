@@ -13,7 +13,7 @@ $entityBody = file_get_contents('php://input');
 $bodyArray = json_decode($entityBody, true);
 
 $slot = $bodyArray['slot'];
-$hp = $bodyArray['hp'];
+$jobsAllowed = $bodyArray['jobs'];
 $itemToEquip = $bodyArray['id'];
 $partyId = $bodyArray['partyId'];
 
@@ -33,6 +33,8 @@ $removedStr = $bodyArray['itemToRemove']['bonusStr'];
 $removedMag = $bodyArray['itemToRemove']['bonusMag'];
 $removedMp = $bodyArray['itemToRemove']['bonusMp'];
 $removedHp = $bodyArray['itemToRemove']['bonusHp'];
+
+$permitEquip = false;
 
 switch($slot) {
     case 'mainHand':
@@ -71,9 +73,22 @@ if ($sentToken) {
     if ($partyResult->num_rows) {
         while($row = $partyResult->fetch_assoc()) {
             $equippedItem = $row[$slotSelected];
+            $job = $row['job'];
         }
     }
-    
+
+    if($jobsAllowed != 'any') {
+        for ($i = 0; $i < count($jobsAllowed); $i++) {
+            if ($jobsAllowed[$i] == $job) {
+                $permitEquip = true;
+            }
+        }
+        
+        if (!$permitEquip) {
+            echo 'invalid job';
+            return;
+        }
+    }
     
     // if the party member has item equipped, remove it, place it back into inventory
     if ($equippedItem != 'empty') {
@@ -179,6 +194,8 @@ if ($sentToken) {
             $stmt->close();
         }
     }
+    
+    echo 'success';
 }
 
 $mysqli->close();
