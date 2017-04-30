@@ -36,27 +36,31 @@ if ($sentToken) {
             $username = $row["username"];
         }
     }
-
+    
     $partySql = "SELECT * FROM party WHERE id = $partyId";
     $partyResult = $mysqli->query($partySql);
     if ($partyResult->num_rows) {
         while($row = $partyResult->fetch_assoc()) {
-            $newStr = $row['strength'] - $removedStr;
-            $newMag = $row['magic'] - $removedMag;
-            $newDef = $row['defense'] - $removedDef;
-            $newRes = $row['resistance'] - $removedRes;
-            $newHst = $row['haste'] - $removedHst;
-            $newHp = $row['hp'] - $removedHp;
-            $newMp = $row['mp'] - $removedMp;
+            $newStr = $row['bonus_strength'] - $removedStr;
+            $newMag = $row['bonus_magic'] - $removedMag;
+            $newDef = $row['bonus_defense'] - $removedDef;
+            $newRes = $row['bonus_resistance'] - $removedRes;
+            $newHst = $row['bonus_haste'] - $removedHst;
+            $newHp = $row['bonus_hp'] - $removedHp;
+            $newMp = $row['bonus_mp'] - $removedMp;
+
+            // check if current hp is higher than hp after unequipping, match it if so
+            $hpCheck = $row['hp'] - $newHp;
+            $mpCheck = $row['mp'] - $newMp;
             
-            if ($row['current_hp'] > $newHp) {
-                $currentHp = $newHp;
+            if ($row['current_hp'] > $hpCheck) {
+                $currentHp = $hpCheck;
             } else {
                 $currentHp = $row['current_hp'];
             }
             
-            if ($row['current_mp'] > $newMp) {
-                $currentMp = $newMp;
+            if ($row['current_mp'] > $mpCheck) {
+                $currentMp = $mpCheck;
             } else {
                 $currentMp = $row['current_mp'];
             }
@@ -68,24 +72,24 @@ if ($sentToken) {
     // unequip the item and remove the item's bonuses
     switch($slot) {
         case 'mainHand':
-        $unequipSlot = 'main_hand';
-        break;
+            $unequipSlot = 'main_hand';
+            break;
         case 'offHand':
-        $unequipSlot = 'off_hand';
-        break;
+            $unequipSlot = 'off_hand';
+            break;
         case 'helm':
-        $unequipSlot = 'helm';
-        break;
+            $unequipSlot = 'helm';
+            break;
         case 'chest':
-        $unequipSlot = 'chest';
-        break;
+            $unequipSlot = 'chest';
+            break;
         case 'accessory':
-        $unequipSlot = 'accessory';
-        break;
+            $unequipSlot = 'accessory';
+            break;
     }
-    
-    if ($stmt = $mysqli->prepare("UPDATE party SET ".$unequipSlot." = ?, strength = ?, magic = ?, defense = ?, resistance = ?, haste = ?,
-    hp = ?, mp = ?, current_hp = ?, current_mp = ?  WHERE id = ?")) {
+
+    if ($stmt = $mysqli->prepare("UPDATE party SET ".$unequipSlot." = ?, bonus_strength = ?, bonus_magic = ?, bonus_defense = ?, bonus_resistance = ?, bonus_haste = ?,
+    bonus_hp = ?, bonus_mp = ?, current_hp = ?, current_mp = ?  WHERE id = ?")) {
         $stmt->bind_param('siiiiiiiiii', $newSlot, $newStr, $newMag, $newDef, $newRes, $newHst, $newHp, $newMp, $currentHp, $currentMp, $partyId);
         $stmt->execute();
         $stmt->close();
@@ -97,7 +101,7 @@ if ($sentToken) {
     if ($inventoryResult->num_rows) {
         while($row = $inventoryResult->fetch_assoc()) {
             $originalAmount = $row[$id];
-
+            
             $newAmount = $originalAmount + 1;
         }
     }
@@ -107,7 +111,7 @@ if ($sentToken) {
         $stmt->execute();
         $stmt->close();
     }
-     
+
     echo 'success';
 }
 
