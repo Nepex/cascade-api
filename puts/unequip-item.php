@@ -67,7 +67,7 @@ if ($sentToken) {
         }
     }
     
-    $newSlot = 'empty';
+    $emptySlot = 'empty';
     
     // unequip the item and remove the item's bonuses
     switch($slot) {
@@ -90,7 +90,7 @@ if ($sentToken) {
 
     if ($stmt = $mysqli->prepare("UPDATE party SET ".$unequipSlot." = ?, bonus_strength = ?, bonus_magic = ?, bonus_defense = ?, bonus_resistance = ?, bonus_haste = ?,
     bonus_hp = ?, bonus_mp = ?, current_hp = ?, current_mp = ?  WHERE id = ?")) {
-        $stmt->bind_param('siiiiiiiiii', $newSlot, $newStr, $newMag, $newDef, $newRes, $newHst, $newHp, $newMp, $currentHp, $currentMp, $partyId);
+        $stmt->bind_param('siiiiiiiiii', $emptySlot, $newStr, $newMag, $newDef, $newRes, $newHst, $newHp, $newMp, $currentHp, $currentMp, $partyId);
         $stmt->execute();
         $stmt->close();
     }

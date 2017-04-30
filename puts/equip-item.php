@@ -122,11 +122,11 @@ if ($sentToken) {
             }
         }
         
-        $newSlot = 'empty';
+        $emptySlot = 'empty';
         
         if ($stmt = $mysqli->prepare("UPDATE party SET ".$slotSelected." = ?, bonus_strength = ?, bonus_magic = ?, bonus_defense = ?, bonus_resistance = ?, bonus_haste = ?,
         bonus_hp = ?, bonus_mp = ?, current_hp = ?, current_mp = ?  WHERE id = ?")) {
-            $stmt->bind_param('siiiiiiiiii', $newSlot, $newStr, $newMag, $newDef, $newRes, $newHst, $newHp, $newMp, $currentHp, $currentMp, $partyId);
+            $stmt->bind_param('siiiiiiiiii', $emptySlot, $newStr, $newMag, $newDef, $newRes, $newHst, $newHp, $newMp, $currentHp, $currentMp, $partyId);
             $stmt->execute();
             $stmt->close();
         }
