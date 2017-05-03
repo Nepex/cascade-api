@@ -16,13 +16,28 @@ if ($sentToken) {
     
     $userId = $decoded->id;
     
-    // remove message
-    if ($stmt = $mysqli->prepare("DELETE FROM messages WHERE id = ?")) {
-        $stmt->bind_param('i', $messageId);
-        $stmt->execute();
-        $stmt->close();
+    $userSql = "SELECT * FROM users WHERE id = $userId";
+    $userResult = $mysqli->query($userSql);
+    if ($userResult->num_rows) {
+        while($row = $userResult->fetch_assoc()) {
+            $username = $row["username"];
+        }
     }
-
+    
+    // remove message
+    if ($messageId == 'all') {
+        if ($stmt = $mysqli->prepare("DELETE FROM messages WHERE receiver = ?")) {
+            $stmt->bind_param('s', $username);
+            $stmt->execute();
+            $stmt->close();
+        }
+    } else {
+        if ($stmt = $mysqli->prepare("DELETE FROM messages WHERE id = ?")) {
+            $stmt->bind_param('i', $messageId);
+            $stmt->execute();
+            $stmt->close();
+        }
+    }
     
     echo 'success';
 }
