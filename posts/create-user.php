@@ -34,6 +34,13 @@ if ($nameMatches != 0) {
             $stmt->close();
         }
         
+        // create inventory
+        if ($stmt = $mysqli->prepare("INSERT INTO `quests` (username) VALUES (?)")) {
+            $stmt->bind_param('s', $username);
+            $stmt->execute();
+            $stmt->close();
+        }
+        
         echo 'success';
         
         $stmt->close();
