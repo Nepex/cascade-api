@@ -31,7 +31,7 @@ if ($sentToken) {
         }
     }
 
-    // give currency to user
+    // use item on party member
     $partySql = "SELECT * FROM party WHERE id = $partyId";
     $partyResult = $mysqli->query($partySql);
     if ($partyResult->num_rows) {
