@@ -11,18 +11,27 @@ $sentToken = $headers['Authorization'];
 
 $newEmail = file_get_contents('php://input');
 
+$searchTakenEmails = mysqli_query($mysqli, "SELECT * FROM users WHERE email='$newEmail'");
+$emailMatches = mysqli_num_rows($searchTakenEmails);
+
 if ($sentToken) {
     $decoded = JWT::decode($sentToken, '8725309');
     
     $userId = $decoded->id;
     
-    if ($stmt = $mysqli->prepare("UPDATE users SET email = ? WHERE id = ?")) {
-        $stmt->bind_param('si', $newEmail, $userId);
-        $stmt->execute();
-        $stmt->close();
-    }
     
-    echo 'success';
+    if ($emailMatches != 0) {
+        echo 'email taken';
+    }
+    else {
+        if ($stmt = $mysqli->prepare("UPDATE users SET email = ? WHERE id = ?")) {
+            $stmt->bind_param('si', $newEmail, $userId);
+            $stmt->execute();
+            $stmt->close();
+        }
+        
+        echo 'success';
+    }
 }
 
 $mysqli->close();
