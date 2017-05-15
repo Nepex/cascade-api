@@ -83,7 +83,7 @@ if ($sentToken) {
     $searchTakenNames = mysqli_query($mysqli, "SELECT * FROM party WHERE owner='$username' AND name='$name'");
     $nameMatches = mysqli_num_rows($searchTakenNames);
     
-    if (!ctype_alnum($name) || $name == '' || strlen($name) > 15 || $job == '' || strlen($job) > 15 ||
+    if (!ctype_alnum($name) || $name == '' || strlen($name) > 6 || $job == '' || strlen($job) > 15 ||
     $sprite == '' || strlen($sprite) > 15) {
         echo 'validation error';
     }
