@@ -14,6 +14,7 @@ $bodyArray = json_decode($entityBody, true);
 
 $memberUsedOn = $bodyArray['memberUsedOn'];
 $memberUsing = $bodyArray['memberUsing'];
+$healingAmount = $bodyArray['healingAmount'];
 $cost = $bodyArray['cost'];
 
 
@@ -69,7 +70,7 @@ if ($sentToken) {
             }
             
             if ($stmt = $mysqli->prepare("UPDATE party SET current_hp = ? WHERE id = ?")) {
-                $stmt->bind_param('ii', $newHp, $partyId);
+                $stmt->bind_param('ii', $newHp, $memberUsedOn);
                 $stmt->execute();
                 $stmt->close();
             }

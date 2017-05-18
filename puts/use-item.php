@@ -30,7 +30,7 @@ if ($sentToken) {
             $username = $row["username"];
         }
     }
-
+    
     // use item on party member
     $partySql = "SELECT * FROM party WHERE id = $partyId";
     $partyResult = $mysqli->query($partySql);
@@ -43,22 +43,20 @@ if ($sentToken) {
             
             $newHp = $currentHp + $healingAmount;
             $newMp = $currentMp + $mpHealingAmount;
-
+            
             if ($newHp > $hp) {
                 $newHp = $hp;
             }
-
+            
             if ($newMp > $mp) {
                 $newMp = $mp;
             }
-
-            if ($stmt = $mysqli->prepare("UPDATE party SET current_hp = ?, current_mp = ? WHERE id = ?")) {
-            $stmt->bind_param('iii', $newHp, $newMp,  $partyId);
-            $stmt->execute();
-            $stmt->close();
-        }
-        
             
+            if ($stmt = $mysqli->prepare("UPDATE party SET current_hp = ?, current_mp = ? WHERE id = ?")) {
+                $stmt->bind_param('iii', $newHp, $newMp,  $partyId);
+                $stmt->execute();
+                $stmt->close();
+            }
         }
     }
     
