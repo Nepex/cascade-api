@@ -19,7 +19,7 @@ if ($sentToken) {
     $decoded = JWT::decode($sentToken, '8725309');
     
     $userId = $decoded->id;
-
+    
     $userSql = "SELECT * FROM users WHERE id = $userId";
     $userResult = $mysqli->query($userSql);
     if ($userResult->num_rows) {
@@ -27,24 +27,24 @@ if ($sentToken) {
             $username = $row["username"];
         }
     }
-
-    $partySql = "SELECT * FROM party WHERE owner = '$username'";
+    
+    $partySql = "SELECT * FROM party WHERE id = $partyId";
     $partyResult = $mysqli->query($partySql);
     if ($partyResult->num_rows) {
         while($row = $partyResult->fetch_assoc()) {
             $currHp = $row['current_hp'];
-
+            
             $newAmount = $currHp - $dmgInflicted;
-
+            
             if ($newAmount < 0) {
                 $newAmount = 0;
             }
-
-            if ($stmt = $mysqli->prepare("UPDATE party SET current_hp = ? WHERE id = ?")) {
-                $stmt->bind_param('ii', $newAmount, $partyId);
-                $stmt->execute();
-                $stmt->close();
-            }
+        }
+        
+        if ($stmt = $mysqli->prepare("UPDATE party SET current_hp = ? WHERE id = ?")) {
+            $stmt->bind_param('ii', $newAmount, $partyId);
+            $stmt->execute();
+            $stmt->close();
         }
     }
     
