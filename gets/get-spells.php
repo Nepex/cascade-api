@@ -25,13 +25,16 @@ if ($sentToken) {
     
     $spellsSql = "SELECT * FROM spells_learned WHERE party_member = '$partyMember' AND username = '$username'";
     $spellsResult = $mysqli->query($spellsSql);
-    
+
     if ($spellsResult->num_rows) {
         while($row = $spellsResult->fetch_assoc()) {
             $rows[] = $row;
         }
+    } else {
+        echo json_encode(array());
+        return;
     }
-    
+
     echo json_encode($rows);
 }
 
